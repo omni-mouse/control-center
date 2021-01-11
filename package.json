@@ -1,0 +1,12 @@
+{
+  "name": "control-center",
+  "version": "1.0.0",
+  "description": "The desktop app for configuring and controlling the Omni Mouse",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^11.1.1"
+  }
+}
