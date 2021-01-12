@@ -17,7 +17,22 @@ contextBridge.exposeInMainWorld("coords", {
   send: (channel) => {
     let validChannels = ["toMain"];
     if (validChannels.includes(channel)) {
-      ipcRenderer.send(channel);
+      ipcRenderer.send(channel, "coords");
+    }
+  },
+  receive: (channel, func) => {
+    let validChannels = ["fromMain"];
+    if (validChannels.includes(channel)) {
+      ipcRenderer.on(channel, (event, ...args) => func(...args));
+    }
+  },
+});
+
+contextBridge.exposeInMainWorld("palette", {
+  send: (channel) => {
+    let validChannels = ["toMain"];
+    if (validChannels.includes(channel)) {
+      ipcRenderer.send(channel, "palette");
     }
   },
   receive: (channel, func) => {
