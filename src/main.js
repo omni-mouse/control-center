@@ -1,4 +1,3 @@
-// Modules to control application life and create native browser window
 const {
   app,
   BrowserWindow,
@@ -20,7 +19,12 @@ app.whenReady().then(() => {
       createPaletteWindow();
       paletteOpen = true;
     }
-    paletteWindow.webContents.send("fromMain", screen.getCursorScreenPoint());
+    paletteWindow.webContents.send(
+      "fromMain",
+      screen.getCursorScreenPoint(),
+      screen.getPrimaryDisplay().workAreaSize,
+      getSettings()
+    );
   });
 
   app.on("activate", function () {
@@ -89,10 +93,22 @@ function createPaletteWindow() {
 }
 
 ipcMain.on("toMain", (event, ...args) => {
-  if (args[0] == "coords") {
-    paletteWindow.webContents.send("fromMain", screen.getCursorScreenPoint());
+  if (args[0] == "setup") {
+    paletteWindow.webContents.send(
+      "fromMain",
+      screen.getCursorScreenPoint(),
+      screen.getPrimaryDisplay().workAreaSize,
+      getSettings()
+    );
   } else if (args[0] == "mode") {
     selectedMode = args[1];
+    console.log(selectedMode);
     paletteWindow.close();
   }
 });
+
+function getSettings() {
+  // TODO: Implement persistent storage
+  let settings = ["Undo", "Redo", "Copy", "Paste", "Keyboard", "Capture"];
+  return settings;
+}

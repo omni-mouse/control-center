@@ -2,29 +2,19 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
-    <meta
-      http-equiv="X-Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
     <link rel="stylesheet" href="palette.css" />
     <title>Omni Mouse</title>
   </head>
   <body>
-    <div>
-      <div class="wheel">
-        <div class="arc"><p>Copy</p></div>
-        <div class="arc"><p>Paste</p></div>
-        <div class="arc"><p>Undo</p></div>
-        <div class="arc"><p>Redo</p></div>
-        <div class="arc"><p>Keyboard</p></div>
-        <div class="arc"><p>Screenshot</p></div>
-        <div class="arc"><p>IDK</p></div>
-        <div class="arc"><p>IDK</p></div>
-      </div>      
+    <div
+      id="wheelDiv"
+      data-wheelnav
+      data-wheelnav-cssmode
+      data-wheelnav-navangle="-90"
+      class="wheelNav"
+    ></div>
+    <script src="../wheelnav/raphael.min.js"></script>
+    <script src="../wheelnav/wheelnav.min.js"></script>
     <script src="./palette.js"></script>
   </body>
 </html>

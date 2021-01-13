@@ -1,58 +1,46 @@
-let showing = false;
-let anchorX;
-let anchorY;
-let hole = 100;
+window.setup.send("toMain");
 
-const wheel = document.querySelector(".wheel");
+window.setup.receive("fromMain", (coords, dimensions, settings) => {
+  wheel = new wheelnav("wheelDiv", null, dimensions.width, dimensions.height);
+  wheel.wheelRadius = 200;
+  wheel.centerX = coords.x;
+  wheel.centerY = coords.y;
+  wheel.clickModeRotate = false;
+  wheel.colors = ["#1665ac"];
+  wheel.slicePathFunction = slicePath().DonutSlice;
+  wheel.initWheel(settings);
 
-window.coords.send("toMain");
+  // TODO: automate the tooltips and setting the functions based on size of settings
+  wheel.navItems[0].tooltip = settings[0];
+  wheel.navItems[1].tooltip = settings[1];
+  wheel.navItems[2].tooltip = settings[2];
+  wheel.navItems[3].tooltip = settings[3];
+  wheel.navItems[4].tooltip = settings[4];
+  wheel.navItems[5].tooltip = settings[5];
 
-window.coords.receive("fromMain", (data) => {
-  showing = true;
-  document.body.addEventListener(
-    "contextmenu",
-    (e) => e.preventDefault() & e.stopPropagation()
-  );
-  document.body.addEventListener("click", selectMode);
-  document.body.addEventListener("mousemove", onMouseMove);
-  openPalette(data.x, data.y);
+  wheel.navItems[0].navigateFunction = function () {
+    modeSelected(settings[0]);
+  };
+  wheel.navItems[1].navigateFunction = function () {
+    modeSelected(settings[1]);
+  };
+  wheel.navItems[2].navigateFunction = function () {
+    modeSelected(settings[2]);
+  };
+  wheel.navItems[3].navigateFunction = function () {
+    modeSelected(settings[3]);
+  };
+  wheel.navItems[4].navigateFunction = function () {
+    modeSelected(settings[4]);
+  };
+  wheel.navItems[5].navigateFunction = function () {
+    modeSelected(settings[5]);
+  };
+
+  wheel.selectedNavItemIndex = null;
+  wheel.createWheel();
 });
 
-function openPalette(x, y) {
-  anchorX = x;
-  anchorY = y;
-
-  wheel.style.top = y + "px";
-  wheel.style.left = x + "px";
-  wheel.classList.add("on");
-}
-
-function selectMode() {
-  showing = false;
-
-  window.mode.send("toMain", wheel.getAttribute("data-chosen"));
-
-  wheel.setAttribute("data-chosen", 0);
-  wheel.classList.remove("on");
-}
-
-function onMouseMove({ clientX: x, clientY: y }) {
-  if (!showing) {
-    return;
-  }
-
-  let dx = x - anchorX;
-  let dy = y - anchorY;
-  let length = Math.sqrt(dx * dx + dy * dy);
-  let index = 0;
-
-  if (length >= hole) {
-    let deg = Math.atan2(dy, dx) + 0.625 * Math.PI;
-    while (deg < 0) {
-      deg += Math.PI * 2;
-    }
-    index = Math.floor((deg / Math.PI) * 4) + 1;
-  }
-
-  wheel.setAttribute("data-chosen", index);
+function modeSelected(selectedMode) {
+  window.mode.send("toMain", selectedMode);
 }
