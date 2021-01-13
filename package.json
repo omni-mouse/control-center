@@ -9,5 +9,8 @@
   "devDependencies": {
     "electron": "^11.1.1",
     "robotjs": "^0.6.0"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.1"
   }
 }

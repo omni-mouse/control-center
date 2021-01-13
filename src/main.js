@@ -5,6 +5,7 @@ const {
   globalShortcut,
   ipcMain,
   screen,
+  shell,
 } = require("electron");
 const path = require("path");
 
@@ -51,6 +52,15 @@ function createHomeWindow() {
   homeWindow.loadFile("src/home/home.html");
 
   // win.webContents.openDevTools();
+
+  const handleRedirect = (e, url) => {
+    if (url !== e.sender.getURL()) {
+      e.preventDefault();
+      shell.openExternal(url);
+    }
+  };
+
+  homeWindow.webContents.on("will-navigate", handleRedirect);
 }
 
 function createPaletteWindow() {
@@ -78,10 +88,11 @@ function createPaletteWindow() {
   paletteWindow.show();
 }
 
-ipcMain.on("toMain", (event, args) => {
-  if (args == "coords") {
+ipcMain.on("toMain", (event, ...args) => {
+  if (args[0] == "coords") {
     paletteWindow.webContents.send("fromMain", screen.getCursorScreenPoint());
-  } else if (args == "palette") {
-    // createPaletteWindow();
+  } else if (args[0] == "mode") {
+    selectedMode = args[1];
+    paletteWindow.close();
   }
 });

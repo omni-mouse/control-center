@@ -2,25 +2,66 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
-    <meta
-      http-equiv="X-Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
+    <link rel="stylesheet" href="home.css" />
     <title>Omni Mouse</title>
+    <script
+      src="https://kit.fontawesome.com/9df0cf7196.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
 
   <body>
-    <h1>Omni Mouse Control Center</h1>
-    <p>
-      To open the palette or to update coordinates, press
-      "Alt+CommandOrControl+Z"
-    </p>
-    <!-- You can also require other files to run in this process -->
+    <ul id="menu">
+      <li>
+        <a id="home-item" class="menu-item fas fa-home active" href="#home"></a>
+      </li>
+      <li>
+        <a
+          id="customize-item"
+          class="menu-item fas fa-pencil-alt"
+          href="#customize"
+        ></a>
+      </li>
+      <li>
+        <a
+          id="contact-item"
+          class="menu-item far fa-envelope"
+          href="#contact"
+        ></a>
+      </li>
+      <li style="float: right">
+        <img src="../assets/dark_logo.png" class="logo" />
+      </li>
+    </ul>
+    <div id="pages">
+      <section id="home-item" class="page active-page">
+        <div class="wrapper">
+          <h1>Control Center</h1>
+          <p>To open the shortcut palette:</p>
+          <code>Mac: Alt + Command + Z</code>
+          <br />
+          <code>Windows or Linux: Alt + Control + Z</code>
+        </div>
+      </section>
+      <section id="customize-item" class="page">
+        <div class="wrapper">
+          <h1>Customize Palette</h1>
+          <p>The ability to customize your palette will come soon!</p>
+          <p>Your current palette:</p>
+        </div>
+      </section>
+      <section id="contact-item" class="page">
+        <div class="wrapper">
+          <h1>Contact Us</h1>
+          <a href="mailto:omni.adaptive@gmail.com" class="fa fa-google"></a>
+          <a
+            href="https://www.linkedin.com/company/omni-assistive-technologies/"
+            class="fa fa-linkedin"
+          ></a>
+          <a href="https://github.com/omni-mouse" class="fa fa-github"></a>
+        </div>
+      </section>
+    </div>
     <script src="./home.js"></script>
   </body>
 </html>
