@@ -12,6 +12,6 @@
     "robotjs": "^0.6.0"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.1"
+    "@fortawesome/fontawesome-free": "^5.15.2"
   }
 }
