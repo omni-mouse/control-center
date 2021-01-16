@@ -1,6 +1,7 @@
 const {
   app,
   BrowserWindow,
+  Notification,
   globalShortcut,
   ipcMain,
   screen,
@@ -11,6 +12,7 @@ const macro = require("./macro");
 
 let homeWindow, paletteWindow;
 let paletteOpen = false;
+let cachedSettings;
 
 app.whenReady().then(() => {
   createHomeWindow();
@@ -104,84 +106,116 @@ ipcMain.on("toMain", (event, ...args) => {
   } else if (args[0] == "mode") {
     selectedMode = args[1];
     paletteWindow.close();
-    macro.executeShortcut(getSettings(), selectedMode);
+    let keybindOptions = getSettings()[selectedMode];
+    let keybind;
+    if (process.platform !== "darwin") {
+      keybind = keybindOptions.windows;
+    } else {
+      keybind = keybindOptions.mac;
+    }
+    let result = macro.executeShortcut(keybind);
+    if (!result) {
+      const notification = {
+        title: "ERROR",
+        body:
+          "This keybind either does not exist on your operating system or is not currently mapped.",
+      };
+      new Notification(notification).show();
+    }
   }
 });
 
 function getSettings() {
   // TODO: Implement persistent storage
-  let settingsObj = {
-    Undo: {
-      mac: {
-        key: "z",
-        modifier: ["command"],
+  if (cachedSettings == null) {
+    let settingsObj = {
+      Undo: {
+        mac: {
+          global: false,
+          key: "z",
+          modifier: ["command"],
+        },
+        windows: {
+          global: false,
+          key: "z",
+          modifier: ["ctrl"],
+        },
       },
-      windows: {
-        key: "z",
-        modifier: ["ctrl"],
+      Redo: {
+        mac: {
+          global: false,
+          key: "z",
+          modifier: ["command", "shift"],
+        },
+        windows: {
+          global: false,
+          key: "y",
+          modifier: ["ctrl"],
+        },
       },
-    },
-    Redo: {
-      mac: {
-        key: "y",
-        modifier: ["command"],
+      Enter: {
+        mac: {
+          global: false,
+          key: "enter",
+          modifier: [],
+        },
+        windows: {
+          global: false,
+          key: "enter",
+          modifier: [],
+        },
       },
-      windows: {
-        key: "y",
-        modifier: ["ctrl"],
+      "Zoom In": {
+        mac: {
+          global: false,
+          key: "=",
+          modifier: ["command"],
+        },
+        windows: {
+          global: false,
+          key: "+",
+          modifier: ["command"],
+        },
       },
-    },
-    Enter: {
-      mac: {
-        key: "enter",
-        modifier: [],
+      "Zoom Out": {
+        mac: {
+          global: false,
+          key: "-",
+          modifier: ["command"],
+        },
+        windows: {
+          global: false,
+          key: "-",
+          modifier: ["command"],
+        },
       },
-      windows: {
-        key: "enter",
-        modifier: [],
+      Keyboard: {
+        mac: {
+          global: true,
+          key: "NULL",
+          modifier: [],
+        },
+        windows: {
+          global: true,
+          key: "o",
+          modifier: ["command", "ctrl"],
+        },
       },
-    },
-    "Zoom In": {
-      mac: {
-        key: "NULL",
-        modifier: [],
+      Capture: {
+        mac: {
+          global: true,
+          key: "5",
+          modifier: ["command", "shift"],
+        },
+        windows: {
+          global: true,
+          key: "s",
+          modifier: ["command", "shift"],
+        },
       },
-      windows: {
-        key: "NULL",
-        modifier: [],
-      },
-    },
-    "Zoom Out": {
-      mac: {
-        key: "NULL",
-        modifier: [],
-      },
-      windows: {
-        key: "NULL",
-        modifier: [],
-      },
-    },
-    Keyboard: {
-      mac: {
-        key: "NULL",
-        modifier: [],
-      },
-      windows: {
-        key: "o",
-        modifier: ["command", "ctrl"],
-      },
-    },
-    Capture: {
-      mac: {
-        key: "5",
-        modifier: ["command", "shift"],
-      },
-      windows: {
-        key: "s",
-        modifier: ["command", "shift"],
-      },
-    },
-  };
+    };
+    cachedSettings = settingsObj;
+  }
 
-  return settingsObj;
+  return cachedSettings;
 }
