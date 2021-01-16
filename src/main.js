@@ -7,6 +7,7 @@ const {
   shell,
 } = require("electron");
 const path = require("path");
+const macro = require("./macro");
 
 let homeWindow, paletteWindow;
 let paletteOpen = false;
@@ -102,13 +103,85 @@ ipcMain.on("toMain", (event, ...args) => {
     );
   } else if (args[0] == "mode") {
     selectedMode = args[1];
-    console.log(selectedMode);
     paletteWindow.close();
+    macro.executeShortcut(getSettings(), selectedMode);
   }
 });
 
 function getSettings() {
   // TODO: Implement persistent storage
-  let settings = ["Undo", "Redo", "Copy", "Paste", "Keyboard", "Capture"];
-  return settings;
+  let settingsObj = {
+    Undo: {
+      mac: {
+        key: "z",
+        modifier: ["command"],
+      },
+      windows: {
+        key: "z",
+        modifier: ["ctrl"],
+      },
+    },
+    Redo: {
+      mac: {
+        key: "y",
+        modifier: ["command"],
+      },
+      windows: {
+        key: "y",
+        modifier: ["ctrl"],
+      },
+    },
+    Enter: {
+      mac: {
+        key: "enter",
+        modifier: [],
+      },
+      windows: {
+        key: "enter",
+        modifier: [],
+      },
+    },
+    "Zoom In": {
+      mac: {
+        key: "NULL",
+        modifier: [],
+      },
+      windows: {
+        key: "NULL",
+        modifier: [],
+      },
+    },
+    "Zoom Out": {
+      mac: {
+        key: "NULL",
+        modifier: [],
+      },
+      windows: {
+        key: "NULL",
+        modifier: [],
+      },
+    },
+    Keyboard: {
+      mac: {
+        key: "NULL",
+        modifier: [],
+      },
+      windows: {
+        key: "o",
+        modifier: ["command", "ctrl"],
+      },
+    },
+    Capture: {
+      mac: {
+        key: "5",
+        modifier: ["command", "shift"],
+      },
+      windows: {
+        key: "s",
+        modifier: ["command", "shift"],
+      },
+    },
+  };
+
+  return settingsObj;
 }
