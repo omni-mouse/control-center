@@ -1,0 +1,30 @@
+{
+  "Undo": {
+    "mac": { "global": false, "key": "z", "modifier": ["command"] },
+    "windows": { "global": false, "key": "z", "modifier": ["control"] }
+  },
+  "Redo": {
+    "mac": { "global": false, "key": "z", "modifier": ["command", "shift"] },
+    "windows": { "global": false, "key": "y", "modifier": ["control"] }
+  },
+  "Enter": {
+    "mac": { "global": false, "key": "enter", "modifier": [] },
+    "windows": { "global": false, "key": "enter", "modifier": [] }
+  },
+  "Zoom In": {
+    "mac": { "global": false, "key": "=", "modifier": ["command"] },
+    "windows": { "global": false, "key": "+", "modifier": ["command"] }
+  },
+  "Zoom Out": {
+    "mac": { "global": false, "key": "-", "modifier": ["command"] },
+    "windows": { "global": false, "key": "-", "modifier": ["command"] }
+  },
+  "Keyboard": {
+    "mac": { "global": true, "key": "k", "modifier": ["command", "alt"] },
+    "windows": { "global": true, "key": "k", "modifier": ["control", "alt"] }
+  },
+  "Capture": {
+    "mac": { "global": true, "key": "5", "modifier": ["command", "shift"] },
+    "windows": { "global": true, "key": "s", "modifier": ["command", "shift"] }
+  }
+}

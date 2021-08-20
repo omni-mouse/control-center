@@ -8,10 +8,14 @@ const {
   shell,
 } = require("electron");
 const path = require("path");
+const glasstron = require("glasstron");
 const macro = require("./macro");
+const settings_data = require('./constants/settings.json');
 
-let homeWindow, paletteWindow;
+let homeWindow, paletteWindow, keyboardWindow;
+let paletteCoords;
 let paletteOpen = false;
+let keyboardOpen = false;
 let cachedSettings;
 
 app.whenReady().then(() => {
@@ -22,12 +26,22 @@ app.whenReady().then(() => {
       createPaletteWindow();
       paletteOpen = true;
     }
+
+    paletteCoords = screen.getCursorScreenPoint();
     paletteWindow.webContents.send(
       "fromMain",
-      screen.getCursorScreenPoint(),
-      screen.getPrimaryDisplay().workAreaSize,
+      paletteCoords,
+      screen.getDisplayNearestPoint(paletteCoords).workAreaSize,
       getSettings()
     );
+  });
+
+  globalShortcut.register("Alt+CommandOrControl+K", () => {
+    if (!keyboardOpen) {
+      createKeyboardWindow();
+      keyboardOpen = true;
+    }
+    keyboardWindow.webContents.send("fromMain");
   });
 
   app.on("activate", function () {
@@ -58,7 +72,7 @@ function createHomeWindow() {
 
   homeWindow.loadFile("src/home/home.html");
 
-  // win.webContents.openDevTools();
+  // homeWindow.webContents.openDevTools();
 
   const handleRedirect = (e, url) => {
     if (url !== e.sender.getURL()) {
@@ -71,10 +85,9 @@ function createHomeWindow() {
 }
 
 function createPaletteWindow() {
-  paletteWindow = new BrowserWindow({
+  paletteWindow = new glasstron.BrowserWindow({
     show: false,
     frame: false,
-    alwaysOnTop: true,
     transparent: true,
     webPreferences: {
       nodeIntegration: false,
@@ -84,26 +97,60 @@ function createPaletteWindow() {
     },
   });
 
-  // paletteWindow.webContents.openDevTools();
-
   paletteWindow.on("closed", () => {
     paletteOpen = false;
   });
 
+  app.dock.hide();
+  paletteWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  paletteWindow.setAlwaysOnTop(true, "floating");
+  paletteWindow.setFullScreenable(false);
+
   paletteWindow.loadFile("src/palette/palette.html");
+  paletteWindow.blurType = "transparent";
+  paletteWindow.setBlur(true);
   paletteWindow.maximize();
   paletteWindow.show();
 }
 
+function createKeyboardWindow() {
+  keyboardWindow = new glasstron.BrowserWindow({
+    show: false,
+    frame: true,
+    transparent: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true, // protect against prototype pollution
+      enableRemoteModule: false, // turn off remote
+      preload: path.join(__dirname, "preload.js"),
+    },
+    useContentSize: true,
+  });
+
+  keyboardWindow.on("closed", () => {
+    keyboardOpen = false;
+  });
+
+  app.dock.hide();
+  keyboardWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  keyboardWindow.setAlwaysOnTop(true, "floating");
+  keyboardWindow.setFullScreenable(false);
+
+  keyboardWindow.webContents.openDevTools();
+
+  keyboardWindow.loadFile("src/keyboard/keyboard.html");
+  keyboardWindow.show();
+}
+
 ipcMain.on("toMain", (event, ...args) => {
-  if (args[0] == "setup") {
+  if (args[0] === "setup") {
     paletteWindow.webContents.send(
       "fromMain",
       screen.getCursorScreenPoint(),
-      screen.getPrimaryDisplay().workAreaSize,
+      screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workAreaSize,
       getSettings()
     );
-  } else if (args[0] == "mode") {
+  } else if (args[0] === "mode") {
     selectedMode = args[1];
     paletteWindow.close();
     let keybindOptions = getSettings()[selectedMode];
@@ -113,12 +160,24 @@ ipcMain.on("toMain", (event, ...args) => {
     } else {
       keybind = keybindOptions.mac;
     }
+
     let result = macro.executeShortcut(keybind);
+
     if (!result) {
       const notification = {
         title: "ERROR",
-        body:
-          "This keybind either does not exist on your operating system or is not currently mapped.",
+        body: "This keybind either does not exist on your operating system or is not currently mapped.",
+      };
+      new Notification(notification).show();
+    }
+  } else if (args[0] === "keyboard") {
+    keyboardWindow.webContents.send("fromMain");
+  } else if (args[0] === "button") {
+    let result = macro.pressButton(args[1], screen.getCursorScreenPoint(), paletteCoords);
+    if (!result) {
+      const notification = {
+        title: "ERROR",
+        body: "This keybind either does not exist on your operating system or is not currently mapped.",
       };
       new Notification(notification).show();
     }
@@ -127,94 +186,8 @@ ipcMain.on("toMain", (event, ...args) => {
 
 function getSettings() {
   // TODO: Implement persistent storage
-  if (cachedSettings == null) {
-    let settingsObj = {
-      Undo: {
-        mac: {
-          global: false,
-          key: "z",
-          modifier: ["command"],
-        },
-        windows: {
-          global: false,
-          key: "z",
-          modifier: ["ctrl"],
-        },
-      },
-      Redo: {
-        mac: {
-          global: false,
-          key: "z",
-          modifier: ["command", "shift"],
-        },
-        windows: {
-          global: false,
-          key: "y",
-          modifier: ["ctrl"],
-        },
-      },
-      Enter: {
-        mac: {
-          global: false,
-          key: "enter",
-          modifier: [],
-        },
-        windows: {
-          global: false,
-          key: "enter",
-          modifier: [],
-        },
-      },
-      "Zoom In": {
-        mac: {
-          global: false,
-          key: "=",
-          modifier: ["command"],
-        },
-        windows: {
-          global: false,
-          key: "+",
-          modifier: ["command"],
-        },
-      },
-      "Zoom Out": {
-        mac: {
-          global: false,
-          key: "-",
-          modifier: ["command"],
-        },
-        windows: {
-          global: false,
-          key: "-",
-          modifier: ["command"],
-        },
-      },
-      Keyboard: {
-        mac: {
-          global: true,
-          key: "NULL",
-          modifier: [],
-        },
-        windows: {
-          global: true,
-          key: "o",
-          modifier: ["command", "ctrl"],
-        },
-      },
-      Capture: {
-        mac: {
-          global: true,
-          key: "5",
-          modifier: ["command", "shift"],
-        },
-        windows: {
-          global: true,
-          key: "s",
-          modifier: ["command", "shift"],
-        },
-      },
-    };
-    cachedSettings = settingsObj;
+  if (cachedSettings == null) {    
+    cachedSettings = settings_data;
   }
 
   return cachedSettings;

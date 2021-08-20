@@ -34,3 +34,27 @@ contextBridge.exposeInMainWorld("mode", {
     }
   },
 });
+
+contextBridge.exposeInMainWorld("keyboard", {
+  send: (channel) => {
+    let validChannels = ["toMain"];
+    if (validChannels.includes(channel)) {
+      ipcRenderer.send(channel, "keyboard");
+    }
+  },
+  receive: (channel, func) => {
+    let validChannels = ["fromMain"];
+    if (validChannels.includes(channel)) {
+      ipcRenderer.on(channel, (event, ...args) => func(...args));
+    }
+  },
+});
+
+contextBridge.exposeInMainWorld("button", {
+  send: (channel, data) => {
+    let validChannels = ["toMain"];
+    if (validChannels.includes(channel)) {
+      ipcRenderer.send(channel, "button", data);
+    }
+  },
+});

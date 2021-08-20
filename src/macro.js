@@ -8,12 +8,23 @@ function executeShortcut(keybind) {
 
   // To highlight the correct application (previous one used before electron opens)
   if (!keybind.global) {
-    robot.keyTap("tab", ["command"]);
-    robot.keyTap("enter");
+    // robot.keyTap("tab", ["command"]);
+    // robot.keyTap("enter");
+    robot.mouseClick();
   }
 
   robot.keyTap(keybind.key, keybind.modifier);
   return true;
 }
 
-module.exports = { executeShortcut };
+function pressButton(button, currentCoords, paletteCoords) {
+  robot.setKeyboardDelay(50);
+
+  // HOW TO TYPE IN CORRECT LOCATION? 
+  // STRAT 1 = move cursor from current to palette back to current
+  robot.keyTap(button);  
+
+  return true;
+}
+
+module.exports = { executeShortcut, pressButton };
