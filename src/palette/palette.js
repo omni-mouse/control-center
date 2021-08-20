@@ -1,3 +1,5 @@
+const wheelRadius = 200;
+
 window.setup.send("toMain");
 
 window.setup.receive("fromMain", (coords, dimensions, settingsObj) => {
@@ -8,7 +10,7 @@ window.setup.receive("fromMain", (coords, dimensions, settingsObj) => {
     dimensions.width - 20,
     dimensions.height - 20
   );
-  wheel.wheelRadius = 200;
+  wheel.wheelRadius = wheelRadius;
   
   adjustCoords(coords, dimensions);
   wheel.centerX = coords.x;
@@ -25,9 +27,24 @@ window.setup.receive("fromMain", (coords, dimensions, settingsObj) => {
     };
   }
 
+  document.addEventListener("click", (event) => {
+    handleClick(event, coords)
+  });
+
+
   wheel.selectedNavItemIndex = null;
   wheel.createWheel();
 });
+
+function handleClick(event, coords) {
+  console.log(event.clientX, event.clientY);
+  let a = event.clientX - coords.x;
+  let b = event.clientY - coords.y;
+  let distance = Math.sqrt( a*a + b*b );
+  if (distance > wheelRadius) {
+    modeSelected("Close");
+  }
+}
 
 function adjustCoords(coords, dimensions) {
   if (coords.x + 200 > dimensions.width) {
@@ -43,6 +60,5 @@ function adjustCoords(coords, dimensions) {
 }
 
 function modeSelected(selectedMode) {
-  // TODO: Close wheel if no mode is selected
   window.mode.send("toMain", selectedMode);
 }

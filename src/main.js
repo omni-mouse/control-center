@@ -161,15 +161,21 @@ ipcMain.on("toMain", (event, ...args) => {
   } else if (args[0] === "mode") {
     selectedMode = args[1];
     paletteWindow.close();
-    let keybindOptions = getSettings()[selectedMode];
-    let keybind;
-    if (process.platform !== "darwin") {
-      keybind = keybindOptions.windows;
-    } else {
-      keybind = keybindOptions.mac;
-    }
+    let result;
 
-    let result = macro.executeShortcut(keybind);
+    if (selectedMode !== "Close") {
+      let keybindOptions = getSettings()[selectedMode];
+      let keybind;
+      if (process.platform !== "darwin") {
+        keybind = keybindOptions.windows;
+      } else {
+        keybind = keybindOptions.mac;
+      }
+  
+      result = macro.executeShortcut(keybind);
+    } else {
+      result = true;
+    }
 
     if (!result) {
       const notification = {
@@ -203,6 +209,7 @@ function getSettings() {
   return cachedSettings;
 }
 
+// TODO: Make more consistent, sometimes not properly getting selected text
 async function getSelectedText() {
   const originalClipboard = clipboard.readText(); // preserve clipboard content
   clipboard.clear();

@@ -20,6 +20,7 @@ function executeShortcut(keybind) {
 function pressButton(text, replace, paletteCoords) {
   robot.moveMouse(paletteCoords.x, paletteCoords.y);
   robot.mouseClick();
+  // TODO: Not a reliable way to delete, can delete whole file
   if (replace) {
     robot.keyTap("a", process.platform === "darwin" ? "command" : "control");
     robot.keyTap("delete");
