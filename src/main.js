@@ -115,6 +115,8 @@ function createPaletteWindow() {
 
 function createKeyboardWindow() {
   keyboardWindow = new glasstron.BrowserWindow({
+    width: 800,
+    height: 300,
     show: false,
     frame: true,
     transparent: false,
@@ -136,7 +138,7 @@ function createKeyboardWindow() {
   keyboardWindow.setAlwaysOnTop(true, "floating");
   keyboardWindow.setFullScreenable(false);
 
-  keyboardWindow.webContents.openDevTools();
+  // keyboardWindow.webContents.openDevTools();
 
   keyboardWindow.loadFile("src/keyboard/keyboard.html");
   keyboardWindow.show();
@@ -173,7 +175,9 @@ ipcMain.on("toMain", (event, ...args) => {
   } else if (args[0] === "keyboard") {
     keyboardWindow.webContents.send("fromMain");
   } else if (args[0] === "button") {
-    let result = macro.pressButton(args[1], screen.getCursorScreenPoint(), paletteCoords);
+    keyboardWindow.close();
+    let result = macro.pressButton(args[1], paletteCoords);
+    
     if (!result) {
       const notification = {
         title: "ERROR",

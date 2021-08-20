@@ -9,6 +9,20 @@
  *   LICENSE file in the root directory of this source tree.
  *
  */
+
+ body {
+   background-color: #ececec;
+ }
+
+ input {
+  background-color: #ececec;
+  width: 100%;
+  height: 50px;
+  padding: 10px;
+  font-size: 20px;
+  border: none;
+}
+
 .hg-theme-default {
   background-color: #ececec;
   border-radius: 5px;

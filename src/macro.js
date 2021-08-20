@@ -17,12 +17,10 @@ function executeShortcut(keybind) {
   return true;
 }
 
-function pressButton(button, currentCoords, paletteCoords) {
-  robot.setKeyboardDelay(50);
-
-  // HOW TO TYPE IN CORRECT LOCATION? 
-  // STRAT 1 = move cursor from current to palette back to current
-  robot.keyTap(button);  
+function pressButton(text, paletteCoords) {
+  robot.moveMouse(paletteCoords.x, paletteCoords.y);
+  robot.mouseClick();
+  robot.typeString(text);
 
   return true;
 }

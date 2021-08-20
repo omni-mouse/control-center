@@ -5,18 +5,25 @@ window.keyboard.receive("fromMain", () => {
   let swipe = window.SimpleKeyboardSwipe.default;
   
   let keyboard = new Keyboard({
-    onKeyPress: button => onKeyPress(button),
+    onChange: input => onChange(input),
+    onKeyPress: (button) => onFinish(button), 
     useMouseEvents: true,
     modules: [
       swipe
     ]
   });
+
+  document.querySelector(".input").addEventListener("input", event => {
+    keyboard.setInput(event.target.value);
+  });
   
-  function onKeyPress(button){
-    let timeout = null;
-    clearTimeout(timeout);
-    timeout = setTimeout(function () {
-      window.button.send("toMain", button);
-    }, 500);
+  function onFinish(button){
+    if (button.includes("enter")) {
+      window.button.send("toMain", document.getElementById('input').value);
+    }
+  } 
+
+  function onChange(input) {
+    document.querySelector(".input").value = input;
   }
 });
