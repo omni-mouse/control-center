@@ -1,8 +1,13 @@
 window.keyboard.send("toMain");
 
-window.keyboard.receive("fromMain", () => {
+window.keyboard.receive("fromMain", (keyboardContent) => {
   let Keyboard = window.SimpleKeyboard.default;
   let swipe = window.SimpleKeyboardSwipe.default;
+  let replace = false;
+  if (keyboardContent) {
+    replace = true;
+    document.getElementById("input").value = keyboardContent;
+  }
   
   let keyboard = new Keyboard({
     onChange: input => onChange(input),
@@ -19,7 +24,7 @@ window.keyboard.receive("fromMain", () => {
   
   function onFinish(button){
     if (button.includes("enter")) {
-      window.button.send("toMain", document.getElementById('input').value);
+      window.button.send("toMain", document.getElementById('input').value, replace);
     }
   } 
 

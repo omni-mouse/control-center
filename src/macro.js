@@ -17,12 +17,23 @@ function executeShortcut(keybind) {
   return true;
 }
 
-function pressButton(text, paletteCoords) {
+function pressButton(text, replace, paletteCoords) {
   robot.moveMouse(paletteCoords.x, paletteCoords.y);
   robot.mouseClick();
+  if (replace) {
+    robot.keyTap("a", process.platform === "darwin" ? "command" : "control");
+    robot.keyTap("delete");
+  }
   robot.typeString(text);
 
   return true;
 }
 
-module.exports = { executeShortcut, pressButton };
+function copyToClipboard() {
+  // To highlight the correct application (previous one used before electron opens)
+  robot.mouseClick();
+
+  robot.keyTap("c", process.platform === "darwin" ? "command" : "control");
+}
+
+module.exports = { executeShortcut, pressButton, copyToClipboard };

@@ -51,10 +51,10 @@ contextBridge.exposeInMainWorld("keyboard", {
 });
 
 contextBridge.exposeInMainWorld("button", {
-  send: (channel, data) => {
+  send: (channel, data, replace) => {
     let validChannels = ["toMain"];
     if (validChannels.includes(channel)) {
-      ipcRenderer.send(channel, "button", data);
+      ipcRenderer.send(channel, "button", data, replace);
     }
   },
 });

@@ -6,6 +6,7 @@ const {
   ipcMain,
   screen,
   shell,
+  clipboard,
 } = require("electron");
 const path = require("path");
 const glasstron = require("glasstron");
@@ -15,7 +16,10 @@ const settings_data = require('./constants/settings.json');
 let homeWindow, paletteWindow, keyboardWindow;
 let paletteCoords;
 let paletteOpen = false;
+
+let keyboardContent = '';
 let keyboardOpen = false;
+
 let cachedSettings;
 
 app.whenReady().then(() => {
@@ -27,6 +31,7 @@ app.whenReady().then(() => {
       paletteOpen = true;
     }
 
+    keyboardContent = getSelectedText();
     paletteCoords = screen.getCursorScreenPoint();
     paletteWindow.webContents.send(
       "fromMain",
@@ -131,6 +136,7 @@ function createKeyboardWindow() {
 
   keyboardWindow.on("closed", () => {
     keyboardOpen = false;
+    keyboardContent = '';
   });
 
   app.dock.hide();
@@ -173,10 +179,10 @@ ipcMain.on("toMain", (event, ...args) => {
       new Notification(notification).show();
     }
   } else if (args[0] === "keyboard") {
-    keyboardWindow.webContents.send("fromMain");
+    keyboardWindow.webContents.send("fromMain", keyboardContent);
   } else if (args[0] === "button") {
     keyboardWindow.close();
-    let result = macro.pressButton(args[1], paletteCoords);
+    let result = macro.pressButton(args[1], args[2], paletteCoords);
     
     if (!result) {
       const notification = {
@@ -195,4 +201,13 @@ function getSettings() {
   }
 
   return cachedSettings;
+}
+
+async function getSelectedText() {
+  const originalClipboard = clipboard.readText(); // preserve clipboard content
+  clipboard.clear();
+  macro.copyToClipboard();
+  await new Promise((resolve) => setTimeout(resolve, 200)); // add a delay before checking clipboard
+  keyboardContent = clipboard.readText();
+  clipboard.writeText(originalClipboard);  
 }
