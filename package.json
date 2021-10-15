@@ -13,6 +13,6 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",
-    "glasstron": "0.0.7"
+    "glasstron": "0.1.1"
   }
 }
