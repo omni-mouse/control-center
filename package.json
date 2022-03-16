@@ -12,7 +12,7 @@
     "robotjs": "^0.6.0"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.1",
+    "@fortawesome/fontawesome-free": "^6.1.0",
     "glasstron": "0.0.7"
   }
 }
